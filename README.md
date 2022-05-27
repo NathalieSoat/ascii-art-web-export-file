@@ -13,7 +13,7 @@ Ascii-art-web-export consists on making sure that it is possible to export the o
 * Type any ascii character in the box, choose a banner then press Submit
 * An output will successfully show up on the webpage
 * Tick 1 file type at a time then click Download
-* A file named asciiresults will be downloaded in your download folder as well as file will be created in your repository.
+* A file named asciiresults will be downloaded in your download folder. A file named download.doc or download.txt depending on what you ticked on type file will be created in your repository.
 
 #### Authors
 
