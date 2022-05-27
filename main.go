@@ -3,8 +3,10 @@ package main
 import (
 	"bufio"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -66,7 +68,14 @@ func posthandler(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(text, "\\n") {
 			c = PrintArt(text, asciiChrs)
 		}
-
+		pin := os.WriteFile("download.doc", []byte(c), 0644)
+		if pin != nil {
+			panic(pin)
+		}
+		pin1 := os.WriteFile("download.txt", []byte(c), 0644)
+		if pin1 != nil {
+			panic(pin1)
+		}
 		temp.ExecuteTemplate(w, "Template.html", c)
 	}
 
@@ -86,9 +95,29 @@ func PrintArt(n string, y map[int][]string) string {
 	return b
 }
 
+func download(w http.ResponseWriter, r *http.Request) {
+
+	formatType := r.FormValue("fileformat")
+
+	f, _ := os.Open("download." + formatType)
+	defer f.Close()
+
+	file, _ := f.Stat()
+	fsize := file.Size()
+
+	sfSize := strconv.Itoa(int(fsize))
+
+	w.Header().Set("Content-Disposition", "attachment; filename=asciiresults."+formatType)
+	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Length", sfSize)
+
+	io.Copy(w, f)
+}
+
 func main() {
 	temp = template.Must(template.ParseGlob("Template.html"))
 
 	http.HandleFunc("/asciiart", posthandler)
+	http.HandleFunc("/down", download)
 	http.ListenAndServe(":8080", nil)
 }
